@@ -1,5 +1,8 @@
 # kafka-helpers
 
+[![Download](https://api.bintray.com/packages/bigpanda/oss-maven/kafka-helpers/images/download.svg)](https://bintray.com/bigpanda/oss-maven/kafka-helpers/_latestVersion)
+[![Build Status](https://travis-ci.org/bigpandaio/kafka-helpers.svg?branch=master)](https://travis-ci.org/bigpandaio/kafka-helpers)
+
 An assortment of `akka-streams` stages and utility functions for working with Kafka. The library builds on `reactive-kafka` and provides combinators that show up frequently in graphs based on Kafka.
 
 ## What's inside?
