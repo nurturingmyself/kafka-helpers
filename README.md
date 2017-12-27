@@ -26,7 +26,7 @@ The `ConsumerSettings` also needs to be provided with the `clientId` and `groupI
 
 ## A common usage scenario
 
-Let's examine a theoretical graph from one of our services. We'll write out the stage types in parentheses. 
+Let's examine a typical graph that reads and writes Kafka topics. We'll write out the stage types in parentheses. 
 
 The graph needs to do the following:
 - Read messages from a Kafka topic (`CommittableMessage[Array[Byte]]`)
@@ -37,7 +37,7 @@ The graph needs to do the following:
 - Commit the offsets, even if validation did not succeed (`CommittableMessage[Array[Byte]] => Future[CommitResult]`)
   - This stage should also do batching when committing offsets
 
-Now, most of the graph is the same across all of our services. Consuming messages, deserializing from JSON, optionally producing, committing offsets - all of these are the exact same logic.
+In most typical use cases, this is how the computation graph will look; consuming messages, deserializing from JSON, optionally producing, committing offsets - all of these stages have logic that can be shared.
 
 So let's see how this graph would look with the stages provided by this library. First, these are the data types we'll work with:
 ```scala
@@ -97,9 +97,9 @@ We'll go through each stage and see what it does:
 
 * `wrapFlow` - This stage lets us wrap any plain flow of type `Flow[F[T], F[U], _]` and convert it to a flow of type `Flow[CommittableMessage[F, T], CommittableMessage[F, U], _]`. 
 
-  In the example, the `businessLogic` flow is exactly the logic that will differ between services. Separating it from the main flow will allow us to cleanly unit test it without any messy mocks.
+  In the example, the `businessLogic` flow is exactly the logic that cannot be shared. Separating it from the main flow will allow us to cleanly unit test it without any messy mocks.
   
-* `produce` - This stage pipes messages into the specified topic in Kafka. It uses an external producer and allows you to share the producer instance across the service, improving throughput. 
+* `produce` - This stage pipes messages into the specified topic in Kafka. It uses an external producer and allows you to share the producer instance across the application, improving throughput. 
 
   The stage requires an implicit `KafkaWritable` instance for the input type; this is a typeclass that describes how to serialize a message into a triplet of key, value and timestamp. The example 
   shows how to create an instance succinctly for any type that has a `play-json` `Writes` instance by providing functions for creating the key and timestamp values.
